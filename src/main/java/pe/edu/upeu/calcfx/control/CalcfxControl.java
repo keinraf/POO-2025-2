@@ -34,6 +34,105 @@ public class CalcfxControl {
     }
 
     private void calcularResultado() {
+        try {
+            String expression = txtResultado.getText().trim();
+            String[] tokens = expression.split(" ");
+
+            //Este if sirve para operaciones que solo requieran de un daot en este caso seria PI ya que apretando pi defrente no vota su valor
+            if (tokens.length == 1) {
+                switch (tokens[0]) {
+                    case "π":
+                        txtResultado.setText(String.valueOf(Math.PI));
+                        return;
+                    default:
+                        try {
+                            Double.parseDouble(tokens[0]);
+                            return;
+                        } catch (NumberFormatException e) {
+                            txtResultado.setText("Error: Entrada inválida");
+                            return;
+                        }
+                }
+
+                //Aqui el ingreso de datos deve ser primero el operdaor luego el numero k sera operado (ej: "Raiz 9")
+            } else if (tokens.length == 2) {
+                String operador = tokens[0];
+                String operandoStr = tokens[1];
+                try {
+                    double operando = Double.parseDouble(operandoStr);
+                    switch (operador) {
+                        case "√":
+                            if (operando >= 0) {
+                                txtResultado.setText(String.valueOf(Math.sqrt(operando)));
+                            } else {
+                                txtResultado.setText("Error: Raíz negativa");
+                            }
+                            return;
+                        case "1/x":
+                            if (operando != 0) {
+                                txtResultado.setText(String.valueOf(1 / operando));
+                            } else {
+                                txtResultado.setText("Error: Div/0");
+                            }
+                            return;
+                        case "=>":
+                            txtResultado.setText("Binario: " + Integer.toBinaryString((int) operando));
+                            return;
+                        default:
+                            txtResultado.setText("Error: Formato inválido");
+                            return;
+                    }
+                } catch (NumberFormatException e) {
+                    txtResultado.setText("Error: Operando inválido");
+                    return;
+                }
+
+                //en este if es para operaciones de 3 variables osea (EJM: 1 + 1)
+            } else if (tokens.length == 3) {
+                double num1 = Double.parseDouble(tokens[0]);
+                String operador = tokens[1];
+                double num2 = Double.parseDouble(tokens[2]);
+                double resultado = 0;
+                switch (operador) {
+                    case "+":
+                        resultado = num1 + num2;
+                        break;
+                    case "-":
+                        resultado = num1 - num2;
+                        break;
+                    case "*":
+                        resultado = num1 * num2;
+                        break;
+                    case "/":
+                        if (num2 != 0) {
+                            resultado = num1 / num2;
+                        } else {
+                            txtResultado.setText("Error: Div/0");
+                            return;
+                        }
+                        break;
+                    case "^":
+                        resultado = Math.pow(num1, num2);
+                        break;
+                    default:
+                        txtResultado.setText("Error: Operador inválido");
+                        return;
+                }
+
+                String[] dd = String.valueOf(resultado).split("\\.");
+                if (dd.length == 2 && dd[1].equals("0")) {
+                    txtResultado.setText(String.valueOf(dd[0]));
+                } else {
+                    txtResultado.setText(String.valueOf(resultado));
+                }
+            } else {
+                txtResultado.setText("Error: Formato inválido");
+            }
+
+        } catch (Exception e) {
+            txtResultado.setText("Error");
+            System.out.println(e.getMessage());
+        }
 
     }
 
